@@ -12,12 +12,12 @@ test('project boundaries do not confuse similarly named sibling folders', () => 
   assert.equal(belongs('/work/app', '/work/app'), true);
 });
 test('parses metadata despite damaged records, validates IDs and uses index title', () => {
-  assert.equal(parseHeader('broken\n' + line({ id, cwd: '/work/app' }), 'file', 1, new Map([[id, 'Nome']])).title, 'Nome');
+  assert.equal(parseHeader('broken\n' + line({ id, cwd: '/work/app' }), 'file', 1, new Map([[id, 'Name']])).title, 'Name');
   assert.equal(parseHeader(line({ id: 'invalid', cwd: '/work/app' }), 'file', 1, new Map()), null);
 });
 test('search includes aliases and paths, filters workspace, and prioritizes favorites', () => {
-  const sessions = [{ id: 'a', cwd: '/app', title: 'Bug', updated: 20 }, { id: 'b', cwd: '/app/sub', title: 'Outro', updated: 10 }, { id: 'c', cwd: '/app-other', title: 'Bug', updated: 30 }];
-  const annotations = { b: { name: 'Corrigir bug', favorite: true } };
+  const sessions = [{ id: 'a', cwd: '/app', title: 'Bug', updated: 20 }, { id: 'b', cwd: '/app/sub', title: 'Other', updated: 10 }, { id: 'c', cwd: '/app-other', title: 'Bug', updated: 30 }];
+  const annotations = { b: { name: 'Fix bug', favorite: true } };
   assert.deepEqual(selectSessions(sessions, ['/app'], false, 'bug', annotations).map(s => s.id), ['b', 'a']);
   assert.equal(selectSessions(sessions, [], true, '', annotations).length, 3);
 });
@@ -30,10 +30,10 @@ test('loads sessions, refreshes titles and handles appended or deleted files', a
   await fs.writeFile(file, line({ id, cwd: '/work/app' }) + '{"incomplete":');
   const store = new SessionStore();
   assert.equal((await store.load(home)).length, 1);
-  await fs.writeFile(path.join(home, 'session_index.jsonl'), JSON.stringify({ id, thread_name: 'Atualizado' }) + '\n{');
-  assert.equal((await store.load(home))[0].title, 'Atualizado');
+  await fs.writeFile(path.join(home, 'session_index.jsonl'), JSON.stringify({ id, thread_name: 'Updated' }) + '\n{');
+  assert.equal((await store.load(home))[0].title, 'Updated');
   await fs.appendFile(file, '\n{}\n');
-  assert.equal((await store.load(home))[0].title, 'Atualizado');
+  assert.equal((await store.load(home))[0].title, 'Updated');
   await fs.unlink(file);
   assert.equal((await store.load(home)).length, 0);
 });

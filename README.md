@@ -1,55 +1,55 @@
-# Codex · Sessões por Projeto
+# Codex · Project Sessions
 
-Extensão local para VS Code que agrupa as sessões do Codex pela pasta de trabalho.
+A VS Code extension that organizes local Codex sessions by working directory.
 
-- Mostra as sessões do projeto aberto e das suas subpastas, incluindo workspaces com várias pastas.
-- O botão de pastas alterna entre o projeto atual e todos os projetos. Sem projeto aberto, mostra todos.
-- A lupa pesquisa nomes, nomes personalizados, caminhos e IDs. Uma pesquisa vazia limpa o filtro.
-- Clique numa sessão para a abrir no painel oficial do Codex.
-- Botão direito: nome personalizado, favorito, copiar ID ou retomar no terminal integrado.
-- Favoritos aparecem primeiro dentro de cada projeto; as restantes sessões seguem a data de alteração.
-- Atualiza a cada 15 segundos enquanto o painel está visível; também existe atualização manual.
+- View sessions from the current project and its subfolders, including multi-root workspaces.
+- Switch between the current project and all projects using the folder icon. With no workspace open, all projects are shown.
+- Search session titles, custom names, paths, and IDs. Clear the search input to reset the filter.
+- Click a session to open it in the official Codex panel.
+- Right-click to rename a session, toggle a favorite, copy its ID, or resume it in the integrated terminal.
+- Favorites appear first within each project; other sessions are sorted by modification time.
+- Refresh automatically every 15 seconds while the view is visible, or refresh manually.
 
-## Instalar e utilizar
+## Installation
 
-Descarregue o ficheiro `.vsix` em [Releases](https://github.com/fernandessamuel21-lang/codex-project-sessions/releases) e instale-o com **Extensions: Install from VSIX…** no VS Code.
+Download the `.vsix` file from [Releases](https://github.com/fernandessamuel21-lang/codex-project-sessions/releases) and run **Extensions: Install from VSIX…** in VS Code.
 
-Para gerar o instalador a partir do código:
+To build and install from source:
 
 ```sh
 npm ci
 npm test
 npm run package
-code --install-extension codex-project-sessions-0.1.0.vsix
+code --install-extension codex-project-sessions-0.1.1.vsix
 ```
 
-Abra **Sessões Codex** na barra de atividades. Se necessário, execute **Developer: Reload Window** no VS Code depois de instalar.
+Open **Codex Sessions** in the activity bar. If needed, run **Developer: Reload Window** after installation.
 
-Para desenvolver, abra `codex-project-sessions.code-workspace` no VS Code e pressione F5. As tarefas **Testar extensão** e **Gerar VSIX** estão disponíveis em **Terminal → Run Task**.
+## Development
 
-## Estado da versão inicial
+Open `codex-project-sessions.code-workspace` in VS Code and press F5. The **Test Extension** and **Build VSIX** tasks are available under **Terminal → Run Task**.
 
-Confirmar no VS Code instalado:
+## Preview status
 
-- O projeto atual mostra apenas as suas sessões e subpastas.
-- A alternância para todos os projetos e a pesquisa funcionam.
-- Um clique abre a conversa correta no painel oficial do Codex.
-- Nomes personalizados e favoritos persistem depois de recarregar a janela.
-- **Retomar no terminal** abre a sessão correta na pasta correta.
-- A atualização encontra uma sessão nova sem reiniciar o editor.
+The automated tests and the initial Extension Host activation smoke test passed. This is a prerelease; opening conversations and the remaining visual workflows still require manual validation:
 
-Os testes automáticos e o teste de ativação no Extension Host passaram na preparação inicial. Esta versão é disponibilizada como pré-lançamento: a abertura de conversas e os restantes fluxos visuais ainda precisam de validação manual.
+- The current-project filter shows only sessions from that project and its subfolders.
+- Switching to all projects and searching work correctly.
+- Clicking a session opens the correct conversation in the official Codex panel.
+- Custom names and favorites persist after reloading the window.
+- **Resume in Terminal** opens the correct session in the correct folder.
+- Refresh discovers a new session without restarting the editor.
 
-## Dados e compatibilidade
+## Data and compatibility
 
-Lê apenas `sessions/**/*.jsonl` e `session_index.jsonl` de `CODEX_HOME` ou `~/.codex`. A configuração `codexSessions.codexHome` permite escolher outra pasta. Lê no máximo 256 KiB do início de cada conversa e mantém uma cache por tamanho/data. Não lê credenciais nem envia dados para serviços externos.
+The extension reads only `sessions/**/*.jsonl` and `session_index.jsonl` under `CODEX_HOME` or `~/.codex`. Set `codexSessions.codexHome` to use a different directory. It reads at most the first 256 KiB of each conversation and caches results by file size and modification time. It does not read credentials or send history to external services.
 
-Os nomes personalizados e favoritos ficam no armazenamento global desta extensão no VS Code. Não alteram os títulos originais do Codex. A pesquisa abrange metadados, não o texto completo das conversas. Sessões arquivadas e sessões apenas na cloud não são incluídas. A data mostrada é a última alteração do ficheiro local.
+Custom names and favorites are stored in this extension's global VS Code storage. Original Codex titles are preserved. Search covers metadata rather than full conversation text. Archived and cloud-only sessions are excluded. Displayed dates use English formatting and reflect local file modification times. Existing conversation titles and user-defined names retain their original language.
 
-A abertura no painel usa `vscode://openai.chatgpt/local/ID` (com o esquema do editor em execução). A rota foi identificada por inspeção estática da extensão instalada `openai.chatgpt` 26.1007.21434; não constitui uma API pública estável. Se deixar de funcionar, use **Retomar no terminal**, que executa `codex resume ID -C PASTA`. É necessário ter o Codex CLI no PATH ou definir `codexSessions.cliPath`.
+Opening a session uses `vscode://openai.chatgpt/local/ID`, with the running editor's URI scheme. This route was identified through static inspection of `openai.chatgpt` version 26.1007.21434 and is not a stable public API. If it stops working, use **Resume in Terminal**, which runs `codex resume ID -C DIRECTORY`. The Codex CLI must be on your PATH, or set `codexSessions.cliPath`.
 
-Em SSH, WSL ou containers, o histórico lido pertence ao ambiente onde esta extensão é executada. A abertura por URI no painel precisa de validação nesses ambientes; a primeira versão destina-se a utilização local.
+In SSH, WSL, and containers, history belongs to the environment where this extension runs. Opening sessions through a URI still requires validation in these environments; this preview targets local use.
 
-## Validação
+## Validation
 
-`npm test` cobre separação de projetos, nomes, pesquisa, favoritos, ficheiros incompletos e atualização da cache. `test/host.cjs` é um teste de ativação para o Extension Host real do VS Code. O clique que reabre uma conversa precisa de confirmação visual no editor do utilizador.
+Run `npm test` to check project boundaries, titles, search, favorite sorting, incomplete files, and cache refresh. `test/host.cjs` provides an activation smoke test for the real VS Code Extension Host. Reopening a conversation still requires visual confirmation in the editor.

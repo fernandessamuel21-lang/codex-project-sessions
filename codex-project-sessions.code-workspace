@@ -1,6 +1,6 @@
 {
   "folders": [
-    { "name": "Codex · Sessões por Projeto", "path": "." }
+    { "name": "Codex · Project Sessions", "path": "." }
   ],
   "settings": {
     "files.exclude": { "node_modules": true },

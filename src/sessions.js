@@ -13,7 +13,7 @@ function parseHeader(text, file, modified, titles) {
   if (!UUID.test(id || '') || typeof meta.cwd !== 'string' || !path.isAbsolute(meta.cwd)) return null;
   const message = rows.find(r => r.type === 'event_msg' && r.payload?.type === 'user_message')?.payload?.message;
   return { id, cwd: path.normalize(meta.cwd), file, updated: modified,
-    title: titles.get(id) || (typeof message === 'string' ? message.replace(/\s+/g, ' ').slice(0, 120) : '') || `Sessão ${id.slice(0, 8)}` };
+    title: titles.get(id) || (typeof message === 'string' ? message.replace(/\s+/g, ' ').slice(0, 120) : '') || `Session ${id.slice(0, 8)}` };
 }
 function belongs(cwd, root) {
   const relative = path.relative(root, cwd);

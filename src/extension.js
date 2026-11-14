@@ -36,16 +36,16 @@ function activate(context) {
     const favorite = annotations()[s.id]?.favorite;
     const item = new vscode.TreeItem(title(s));
     item.id = s.id; item.contextValue = 'session'; item.session = s;
-    item.description = new Date(s.updated).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' });
+    item.description = new Date(s.updated).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
     item.tooltip = `${title(s)}\n${s.cwd}\n${item.description}\n${s.id}`;
     item.iconPath = new vscode.ThemeIcon(favorite ? 'star-full' : 'comment-discussion');
-    item.command = { command: 'codexSessions.open', title: 'Abrir no Codex', arguments: [item] };
+    item.command = { command: 'codexSessions.open', title: 'Open in Codex', arguments: [item] };
     return item;
   }
   const view = vscode.window.createTreeView('codexSessions.list', { treeDataProvider: provider, showCollapseAll: true });
   function update() {
-    view.description = `${all || !roots().length ? 'Todos os projetos' : 'Projeto atual'}${query ? ` · ${query}` : ''}`;
-    view.message = visible().length ? undefined : 'Nenhuma sessão encontrada. Use o ícone de pastas para ver todos os projetos, ou a lupa para mudar a pesquisa.';
+    view.description = `${all || !roots().length ? 'All Projects' : 'Current Project'}${query ? ` · ${query}` : ''}`;
+    view.message = visible().length ? undefined : 'No sessions found. Use the folder icon to view all projects, or the search icon to change the filter.';
     changed.fire();
   }
   async function refresh(manual = false) {
@@ -53,7 +53,7 @@ function activate(context) {
     loading = (async () => {
       try { sessions = await store.load(home()); update(); }
       catch (error) {
-        view.message = `Não foi possível ler o histórico: ${error.message}`;
+        view.message = `Could not read history: ${error.message}`;
         if (manual) vscode.window.showErrorMessage(view.message);
       } finally { loading = undefined; }
     })();
@@ -61,7 +61,7 @@ function activate(context) {
   }
   async function choose(node) {
     if (node?.session && UUID.test(node.session.id)) return node.session;
-    return (await vscode.window.showQuickPick(visible().map(s => ({ label: title(s), description: s.cwd, detail: s.id, session: s })), { placeHolder: 'Escolher sessão Codex', matchOnDescription: true, matchOnDetail: true }))?.session;
+    return (await vscode.window.showQuickPick(visible().map(s => ({ label: title(s), description: s.cwd, detail: s.id, session: s })), { placeHolder: 'Choose a Codex session', matchOnDescription: true, matchOnDetail: true }))?.session;
   }
   async function edit(node, transform) {
     const s = await choose(node); if (!s) return;
@@ -72,25 +72,25 @@ function activate(context) {
     await context.globalState.update('annotations', data); update();
   }
   const command = (name, fn) => context.subscriptions.push(vscode.commands.registerCommand(`codexSessions.${name}`, async (...args) => {
-    try { await fn(...args); } catch (error) { vscode.window.showErrorMessage(`Sessões Codex: ${error.message}`); }
+    try { await fn(...args); } catch (error) { vscode.window.showErrorMessage(`Codex Sessions: ${error.message}`); }
   }));
   command('refresh', () => refresh(true));
   command('scope', async () => { all = !all; await context.globalState.update('allProjects', all); update(); });
   command('search', async () => {
-    const value = await vscode.window.showInputBox({ title: 'Pesquisar sessões Codex', prompt: 'Pesquisar por nome, pasta ou ID. Deixar vazio limpa o filtro.', value: query });
+    const value = await vscode.window.showInputBox({ title: 'Search Codex Sessions', prompt: 'Search by name, folder, or ID. Leave empty to clear the filter.', value: query });
     if (value !== undefined) { query = value; update(); }
   });
   command('favorite', node => edit(node, value => ({ ...value, favorite: !value.favorite })));
   command('rename', node => edit(node, async (value, s) => {
-    const name = await vscode.window.showInputBox({ title: 'Nome personalizado', prompt: 'Vazio repõe o nome original do Codex.', value: value.name || title(s) });
+    const name = await vscode.window.showInputBox({ title: 'Custom Name', prompt: 'Leave empty to restore the original Codex name.', value: value.name || title(s) });
     return name === undefined ? undefined : { ...value, name: name.trim().slice(0, 200) };
   }));
   command('copyId', async node => { const s = await choose(node); if (s) await vscode.env.clipboard.writeText(s.id); });
   command('open', async node => {
     const s = await choose(node); if (!s) return;
-    if (!vscode.extensions.getExtension('openai.chatgpt')) throw new Error('Instale a extensão oficial do Codex, ou use “Retomar no terminal”.');
+    if (!vscode.extensions.getExtension('openai.chatgpt')) throw new Error('Install the official Codex extension, or use “Resume in Terminal”.');
     const uri = vscode.Uri.from({ scheme: vscode.env.uriScheme, authority: 'openai.chatgpt', path: `/local/${s.id}` });
-    if (!await vscode.env.openExternal(uri)) throw new Error('Não foi possível abrir o Codex. Use “Retomar no terminal”.');
+    if (!await vscode.env.openExternal(uri)) throw new Error('Could not open Codex. Use “Resume in Terminal”.');
   });
   command('terminal', async node => {
     const s = await choose(node); if (!s) return;

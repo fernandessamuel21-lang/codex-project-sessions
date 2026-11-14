@@ -2,14 +2,14 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Testar extensão",
+      "label": "Test Extension",
       "type": "npm",
       "script": "test",
       "group": { "kind": "test", "isDefault": true },
       "problemMatcher": []
     },
     {
-      "label": "Gerar VSIX",
+      "label": "Build VSIX",
       "type": "npm",
       "script": "package",
       "group": { "kind": "build", "isDefault": true },
