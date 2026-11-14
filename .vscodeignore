@@ -1,0 +1,7 @@
+node_modules/**
+test/**
+.vscode/**
+package-lock.json
+*.vsix
+*.code-workspace
+.github/**

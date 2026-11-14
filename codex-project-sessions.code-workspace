@@ -1,0 +1,9 @@
+{
+  "folders": [
+    { "name": "Codex · Sessões por Projeto", "path": "." }
+  ],
+  "settings": {
+    "files.exclude": { "node_modules": true },
+    "search.exclude": { "node_modules": true, "*.vsix": true }
+  }
+}

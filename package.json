@@ -1,0 +1,54 @@
+{
+  "name": "codex-project-sessions",
+  "displayName": "Codex · Sessões por Projeto",
+  "description": "Organiza o histórico local do Codex por projeto, com pesquisa, favoritos e nomes personalizados.",
+  "version": "0.1.0",
+  "publisher": "samuel-local",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/fernandessamuel21-lang/codex-project-sessions.git" },
+  "homepage": "https://github.com/fernandessamuel21-lang/codex-project-sessions#readme",
+  "bugs": { "url": "https://github.com/fernandessamuel21-lang/codex-project-sessions/issues" },
+  "engines": { "vscode": "^1.95.0" },
+  "categories": ["Other"],
+  "main": "./src/extension.js",
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onView:codexSessions.list"],
+  "capabilities": { "untrustedWorkspaces": { "supported": false } },
+  "scripts": { "test": "node --test test/*.test.js", "package": "vsce package --allow-missing-repository" },
+  "devDependencies": { "@vscode/vsce": "^3.6.0" },
+  "contributes": {
+    "viewsContainers": { "activitybar": [{ "id": "codexSessions", "title": "Sessões Codex", "icon": "resources/sessions.svg" }] },
+    "views": { "codexSessions": [{ "id": "codexSessions.list", "name": "Sessões por Projeto" }] },
+    "commands": [
+      { "command": "codexSessions.refresh", "title": "Atualizar sessões", "category": "Sessões Codex", "icon": "$(refresh)" },
+      { "command": "codexSessions.search", "title": "Pesquisar sessões", "category": "Sessões Codex", "icon": "$(search)" },
+      { "command": "codexSessions.scope", "title": "Alternar projeto atual / todos", "category": "Sessões Codex", "icon": "$(folder-library)" },
+      { "command": "codexSessions.open", "title": "Abrir no Codex", "category": "Sessões Codex" },
+      { "command": "codexSessions.terminal", "title": "Retomar no terminal", "category": "Sessões Codex" },
+      { "command": "codexSessions.rename", "title": "Dar nome à sessão", "category": "Sessões Codex" },
+      { "command": "codexSessions.favorite", "title": "Alternar favorito", "category": "Sessões Codex", "icon": "$(star-empty)" },
+      { "command": "codexSessions.copyId", "title": "Copiar ID da sessão", "category": "Sessões Codex" }
+    ],
+    "menus": {
+      "view/title": [
+        { "command": "codexSessions.search", "when": "view == codexSessions.list", "group": "navigation@1" },
+        { "command": "codexSessions.scope", "when": "view == codexSessions.list", "group": "navigation@2" },
+        { "command": "codexSessions.refresh", "when": "view == codexSessions.list", "group": "navigation@3" }
+      ],
+      "view/item/context": [
+        { "command": "codexSessions.favorite", "when": "view == codexSessions.list && viewItem == session", "group": "inline" },
+        { "command": "codexSessions.open", "when": "viewItem == session", "group": "1_open" },
+        { "command": "codexSessions.terminal", "when": "viewItem == session", "group": "1_open" },
+        { "command": "codexSessions.rename", "when": "viewItem == session", "group": "2_manage" },
+        { "command": "codexSessions.copyId", "when": "viewItem == session", "group": "2_manage" }
+      ]
+    },
+    "configuration": {
+      "title": "Sessões Codex",
+      "properties": {
+        "codexSessions.codexHome": { "type": "string", "default": "", "description": "Pasta do histórico. Vazio usa CODEX_HOME ou ~/.codex.", "scope": "machine" },
+        "codexSessions.cliPath": { "type": "string", "default": "codex", "description": "Executável Codex para retomar no terminal.", "scope": "machine" }
+      }
+    }
+  }
+}
